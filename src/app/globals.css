@@ -42,7 +42,7 @@ body {
   }
   .indicator-dot.active {
     width: 32px !important;
-    @apply bg-primary;
+    background: #6366f1 !important;
   }
 
   .carousel-slide {

@@ -46,7 +46,7 @@ export default function Footer() {
           style={{
             fontSize: "clamp(120px, 28vw, 320px)", // lebih gede dari LET'S TALK.
             color: "transparent",
-            WebkitTextStroke: `1px rgba(255,255,255,0.11)`,
+            WebkitTextStroke: `1px rgba(255,255,255,0.16)`,
             letterSpacing: "-0.04em",
           }}
         >

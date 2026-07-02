@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { barlowCondensed, jetbrainsMono } from "./fonts";
 
 export const metadata: Metadata = {
   title: 'Anugerah Rachmat Indriansyah | Fullstack Developer & Project Manager',
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${barlowCondensed.variable} ${jetbrainsMono.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

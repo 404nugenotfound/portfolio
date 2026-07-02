@@ -50,7 +50,9 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['Geist', 'sans-serif'],
-        mono: ['Geist Mono', 'monospace'],
+        mono: ['Geist Mono', 'monospace'],       // tetap, buat code snippet dsb kalau ada
+        condensed: ['var(--font-barlow)', 'sans-serif'],
+        jetbrains: ['var(--font-jetbrains)', 'monospace'],  // baru
       },
       fontSize: {
         display: ['72px', { lineHeight: '1.1', letterSpacing: '-0.04em', fontWeight: '600' }],

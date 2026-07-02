@@ -105,44 +105,39 @@ export default function Hero() {
 
       {/* Content — bottom left */}
       <div className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-gutter pb-16 md:pb-14">
-        {/* Accent line */}
-        <div className="mb-5 h-px w-10 bg-primary" />
-
         {/* Eyebrow */}
-        <p className="mb-4 text-label-md tracking-[0.22em] uppercase text-primary opacity-80">
-          Personal Portfolio · Open to Work 
+        <p className="mb-6 font-mono text-[0.9rem] tracking-[0.3em] uppercase text-primary">
+          — Fullstack Developer & Designer
         </p>
 
         {/* Name */}
         <h1
-          className="leading-[1.05] font-light text-on-surface"
+          className="m-0 -ml-1 pb-2 font-black leading-[0.87] tracking-[-0.01em] text-on-surface"
           style={{
-            fontSize: "clamp(36px, 6.5vw, 60px)",
-            letterSpacing: "-0.025em",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: "clamp(2.5rem, 9vw, 4rem)",
           }}
         >
-          Anugerah Rachmat
-        </h1>
-        <h1
-          className="mb-6 leading-[1.05] font-semibold text-primary"
-          style={{
-            fontSize: "clamp(36px, 6.5vw, 68px)",
-            letterSpacing: "-0.025em",
-          }}
-        >
-          Indriansyah
+          <span className="block">ANUGERAH</span>
+          <span className="block">RACHMAT</span>
+          <span
+            className="block text-transparent"
+            style={{ WebkitTextStroke: "2px rgba(245,245,247,0.55)" }}
+          >
+            INDRIANSYAH
+          </span>
         </h1>
 
         {/* Bottom row */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-body-lg font-light text-outline leading-relaxed">
-              Fullstack Developer & Designer —{" "}
-            </p>
-            <p className="text-body-lg font-light text-on-surface-variant leading-relaxed">
-              building purposeful digital experiences
-            </p>
-          </div>
+        <div className="mt-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-[550px] text-body-lg font-light leading-relaxed text-on-surface-variant">
+            <span className="block">
+              Building purposeful digital experiences —
+            </span>
+            <span className="block">
+              from full-stack engineering to end-to-end product design
+            </span>
+          </p>
 
           {/* CTA */}
           <a
@@ -169,6 +164,7 @@ export default function Hero() {
           </a>
         </div>
       </div>
+
       {/* Scroll indicator */}
       <div className="hidden md:flex flex-col items-center gap-2 absolute bottom-10 left-1/2 -translate-x-1/2 z-10 opacity-50">
         <span className="text-[11px] font-medium tracking-[0.08em] uppercase text-on-surface px-4 py-1.5 rounded-full bg-white/5 border border-white/10">

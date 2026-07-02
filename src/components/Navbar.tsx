@@ -27,7 +27,7 @@ export default function Navbar() {
             letterSpacing: "0.02em",
           }}
         >
-          Nugget..
+          
         </span>
         <a
           href="#contact"
