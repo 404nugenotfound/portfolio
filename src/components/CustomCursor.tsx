@@ -49,12 +49,12 @@ export default function CustomCursor() {
     <>
       <div
         ref={dotRef}
-        className="fixed z-9999 pointer-events-none w-2 h-2 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2"
+        className="fixed z-[9999] pointer-events-none w-2 h-2 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2"
         style={{ boxShadow: '0 0 10px #3B82F6' }}
       />
       <div
         ref={outlineRef}
-        className="fixed z-9998 pointer-events-none w-10 h-10 border border-primary/50 rounded-full transition-transform duration-150"
+        className="fixed z-[9998] pointer-events-none w-10 h-10 border border-primary/50 rounded-full transition-transform duration-150"
       />
     </>
   )

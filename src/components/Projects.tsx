@@ -33,19 +33,21 @@ const projects = [
 ];
 
 const n = projects.length;
-// clone last at start, clone first at end -> seamless infinite loop
 const extended = [projects[n - 1], ...projects, projects[0]];
 
 const TRANSITION = "transform 0.6s cubic-bezier(0.65, 0, 0.35, 1)";
 
 export default function Projects() {
-  const [current, setCurrent] = useState(0); // real dot index (0..n-1)
+  const [activeProject, setActiveProject] = useState<
+    (typeof projects)[0] | null
+  >(null);
+  const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartX = useRef(0);
-  const trackIndexRef = useRef(1); // position in `extended` array
+  const trackIndexRef = useRef(1);
 
   const render = useCallback((idx: number, instant: boolean) => {
     const track = trackRef.current;
@@ -54,11 +56,17 @@ export default function Projects() {
     const slides = Array.from(track.children) as HTMLElement[];
     if (!slides.length) return;
     const slideW = slides[0].offsetWidth;
+
+    if (slideW === 0) {
+      requestAnimationFrame(() => render(idx, instant));
+      return;
+    }
+
     const centerOffset = (container.offsetWidth - slideW) / 2;
     track.style.transition = instant ? "none" : TRANSITION;
     track.style.transform = `translateX(${-(idx * slideW) + centerOffset}px)`;
     if (instant) {
-      void track.offsetHeight; // force reflow so transition:none applies before we restore it
+      void track.offsetHeight;
       track.style.transition = TRANSITION;
     }
     slides.forEach((s, i) => s.classList.toggle("active", i === idx));
@@ -88,18 +96,19 @@ export default function Projects() {
     [goToTrack],
   );
 
+  const pausedRef = useRef(false);
+
   const startAuto = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      if (!paused) next();
+      if (!pausedRef.current) next();
     }, 4000);
-  }, [paused, next]);
+  }, [next]);
 
   const handleTransitionEnd = useCallback(() => {
     const t = trackIndexRef.current;
-    if (t === n + 1)
-      goToTrack(1, true); // landed on clone-of-first -> snap to real first
-    else if (t === 0) goToTrack(n, true); // landed on clone-of-last -> snap to real last
+    if (t === n + 1) goToTrack(1, true);
+    else if (t === 0) goToTrack(n, true);
   }, [goToTrack]);
 
   useEffect(() => {
@@ -107,9 +116,15 @@ export default function Projects() {
     startAuto();
     const onResize = () => render(trackIndexRef.current, true);
     window.addEventListener("resize", onResize);
+
+    const imgs = trackRef.current?.querySelectorAll("img") ?? [];
+    const onImgLoad = () => render(trackIndexRef.current, true);
+    imgs.forEach((img) => img.addEventListener("load", onImgLoad));
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       window.removeEventListener("resize", onResize);
+      imgs.forEach((img) => img.removeEventListener("load", onImgLoad));
     };
   }, []); // eslint-disable-line
 
@@ -118,12 +133,10 @@ export default function Projects() {
       id="projects"
       className="w-full"
       style={{
-        background:
-          "linear-gradient(to bottom, #2a2d40 0%, #6b6f85 45%, #c7c8d1 100%)",
+        background: "linear-gradient(to bottom, #2a2d40, #232538)",
       }}
     >
       <div className="py-section-padding px-6 md:px-12 max-w-container-max mx-auto">
-        {/* Header — eyebrow + headline left, intro right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end mb-20 reveal">
           <div className="flex flex-col gap-6">
             <p
@@ -145,14 +158,13 @@ export default function Projects() {
           </div>
           <p
             className="leading-[1.6] font-light lg:text-right max-w-[420px] lg:ml-auto"
-            style={{ fontSize: "1.15rem", color: "#ffffff" }}
+            style={{ fontSize: "1.15rem", color: "rgba(220,220,226,0.6)" }}
           >
-            Four projects I'm proud to have built and shipped — from research
-            collaborations to freelance work.
+            Four projects I&apos;m proud to have built and shipped — from
+            research collaborations to freelance work.
           </p>
         </div>
 
-        {/* Carousel */}
         <div className="relative max-w-350 mx-auto reveal">
           <div
             ref={containerRef}
@@ -162,13 +174,14 @@ export default function Projects() {
             <div
               ref={trackRef}
               className="flex"
-              style={{
-                transition: TRANSITION,
-                willChange: "transform",
-              }}
+              style={{ transition: TRANSITION, willChange: "transform" }}
               onTransitionEnd={handleTransitionEnd}
-              onMouseEnter={() => setPaused(true)}
-              onMouseLeave={() => setPaused(false)}
+              onMouseEnter={() => {
+                pausedRef.current = true;
+              }}
+              onMouseLeave={() => {
+                pausedRef.current = false;
+              }}
               onTouchStart={(e) => {
                 touchStartX.current = e.changedTouches[0].screenX;
               }}
@@ -184,11 +197,19 @@ export default function Projects() {
                   className={`carousel-slide ${i === 1 ? "active" : ""}`}
                 >
                   <div
-                    className="rounded-2xl overflow-hidden group h-full"
+                    className="rounded-2xl overflow-hidden group h-full transition-all duration-300"
                     style={{
                       background: "#1a1c2b",
                       boxShadow:
                         "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.boxShadow =
+                        "0 0 0 1px rgba(99,102,241,0.4), 0 20px 60px rgba(0,0,0,0.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.boxShadow =
+                        "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)";
                     }}
                   >
                     <div className="h-64 bg-surface-container overflow-hidden relative">
@@ -197,41 +218,70 @@ export default function Projects() {
                         alt={p.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
+                      <span
+                        className="absolute top-4 right-4 px-3 py-1 rounded-full text-[11px] tracking-[0.08em] capitalize text-white"
+                        style={{
+                          fontFamily: "Inter, sans-serif",
+                          fontWeight: 700,
+                          background: "rgba(20,20,24,0.45)",
+                          backdropFilter: "blur(8px)",
+                          border: "1px solid rgba(255,255,255,0.18)",
+                        }}
+                      >
+                        {p.badge}
+                      </span>
                     </div>
                     <div className="p-8">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3
-                          className="font-condensed font-black uppercase text-3xl text-white"
-                          style={{ letterSpacing: "-0.01em" }}
-                        >
-                          {p.name}
-                        </h3>
-                        <span className="font-jetbrains px-4 py-1.5 rounded-full text-[13px] tracking-[0.1em] lowercase text-white shrink-0 ml-4 border border-white/15">
-                          {p.badge}
-                        </span>
-                      </div>
-                      <p className="text-on-surface-variant mb-6 line-clamp-2">
+                      <h3
+                        className="mb-3"
+                        style={{
+                          fontFamily: "Inter, sans-serif",
+                          fontWeight: 600,
+                          fontSize: "1.45rem",
+                          letterSpacing: "-0.02em",
+                          color: "#ffffff",
+                        }}
+                      >
+                        {p.name}
+                      </h3>
+                      <p
+                        className="mb-6 line-clamp-2"
+                        style={{ color: "rgba(255,255,255,0.6)" }}
+                      >
                         {p.desc}
                       </p>
                       <div className="flex flex-wrap gap-2 mb-8">
                         {p.tags.map((t) => (
                           <span
                             key={t}
-                            className="font-jetbrains px-4 py-1.5 text-primary text-[14px] tracking-[0.1em] lowercase rounded-full border border-primary/25"
+                            className="px-3 py-1 text-[12px] tracking-[0.08em] lowercase rounded-full"
+                            style={{
+                              fontFamily: "'JetBrains Mono', monospace",
+                              background: "rgba(255,255,255,0.06)",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              color: "rgba(255,255,255,0.75)",
+                            }}
                           >
                             {t}
                           </span>
                         ))}
                       </div>
-                      <a
-                        href="#"
-                        className="flex items-center text-primary font-bold hover:translate-x-2 transition-transform duration-300"
+                      <button
+                        onClick={() => setActiveProject(p)}
+                        className="flex items-center font-bold hover:translate-x-2 transition-all duration-300"
+                        style={{ color: "#ffffff" }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.color = "#818cf8")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.color = "#ffffff")
+                        }
                       >
                         View Project{" "}
                         <span className="material-symbols-outlined ml-2">
                           arrow_forward
                         </span>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -283,6 +333,90 @@ export default function Projects() {
           </div>
         </div>
       </div>
+
+      {activeProject && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center p-6"
+          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+          onClick={() => setActiveProject(null)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl overflow-hidden"
+            style={{
+              background: "#1a1c2b",
+              boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActiveProject(null)}
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center text-white"
+              style={{ background: "rgba(0,0,0,0.5)" }}
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            <div className="h-72 overflow-hidden">
+              <img
+                src={activeProject.img}
+                alt={activeProject.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-4">
+                <h3
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
+                    fontSize: "1.4rem",
+                    letterSpacing: "-0.02em",
+                    color: "#ffffff",
+                  }}
+                >
+                  {activeProject.name}
+                </h3>
+                <span
+                  className="px-3 py-1 rounded-full text-[11px] tracking-[0.08em] capitalize text-white shrink-0 ml-4"
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 700,
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  {activeProject.badge}
+                </span>
+              </div>
+
+              <p
+                className="mb-6 leading-relaxed"
+                style={{ color: "rgba(255,255,255,0.7)" }}
+              >
+                {activeProject.desc}
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {activeProject.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="px-3 py-1 text-[12px] tracking-[0.08em] lowercase rounded-full"
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(255,255,255,0.75)",
+                    }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

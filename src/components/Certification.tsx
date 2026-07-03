@@ -1,5 +1,4 @@
 "use client";
-
 const certs = [
   {
     icon: "school",
@@ -30,18 +29,16 @@ const certs = [
     desc: "Advanced English proficiency demonstrating strong global communication skills.",
   },
 ];
-
 export default function Certifications() {
   return (
     <section
       id="certifications"
       className="w-full"
       style={{
-        background:
-          "linear-gradient(to bottom, #ffffff 0%, #ffffff 90%, #6b6f85 95%, #14161f 100%)",
+        background: "linear-gradient(to bottom, #1c1e2c, #14161f)",
       }}
     >
-      <div className="pt-16 pb-section-padding px-6 md:px-12 max-w-container-max mx-auto">
+      <div className="pt-16 pb-48 md:pb-64 px-6 md:px-12 max-w-container-max mx-auto">
         {/* Eyebrow + headline — same pattern as other sections */}
         <div className="flex flex-col items-center gap-6 mb-12 reveal">
           <p
@@ -55,13 +52,12 @@ export default function Certifications() {
             style={{
               fontSize: "clamp(2.5rem, 6vw, 5rem)",
               letterSpacing: "-0.01em",
-              color: "#000000",
+              color: "#ffffff",
             }}
           >
             Certifications
           </h2>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {certs.map((c) => (
             <div
@@ -81,20 +77,36 @@ export default function Certifications() {
               </span>
               <h4
                 className="font-condensed font-black uppercase text-xl mb-3 min-h-[3rem] flex items-center justify-center text-white"
-                style={{ letterSpacing: "-0.01em" }}
+                style={{ letterSpacing: "0.01em" }}
               >
                 {c.title}
               </h4>
-              <p className="font-jetbrains text-[0.65rem] tracking-[0.2em] lowercase text-outline mb-2">
+              <p
+                className="text-[0.8rem] mb-1"
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  color: "rgba(255,255,255,0.5)",
+                }}
+              >
                 {c.issuer}
               </p>
               <p
-                className="font-jetbrains text-[0.65rem] tracking-[0.15em] lowercase mb-6"
-                style={{ color: "#818cf8" }}
+                className="text-[0.8rem] mb-6"
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  color: "#818cf8",
+                }}
               >
                 {c.date}
               </p>
-              <p className="text-sm leading-relaxed text-on-surface-variant mt-auto">
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "rgba(255,255,255,0.6)", letterSpacing: "0.01em" }}
+              >
                 {c.desc}
               </p>
             </div>

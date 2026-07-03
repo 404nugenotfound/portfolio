@@ -31,7 +31,6 @@ const row2: Tech[] = [
 ];
 
 const row3: Tech[] = [
-  { name: "Figma", slug: "figma", color: "F24E1E" },
   { name: "Git", slug: "git", color: "F05032" },
   { name: "GitHub", slug: "github", color: "FFFFFF" },
   { name: "Vercel", slug: "vercel", color: "FFFFFF" },
@@ -42,6 +41,7 @@ const row3: Tech[] = [
 ];
 
 const creativeRow: Tech[] = [
+  { name: "Figma", slug: "figma", color: "F24E1E" },
   { name: "Adobe Lightroom", localSrc: "/icons/adobe-lightroom.png" },
   { name: "Adobe Photoshop", localSrc: "/icons/adobe-photoshop.png" },
   { name: "Filmora", localSrc: "/icons/filmora.png" },
@@ -55,6 +55,7 @@ const BED = 14;
 
 const ROWW = 8 * KEY + 7 * GAP;
 const R1_OFF = Math.round((ROWW - (6 * KEY + 5 * GAP)) / 2);
+const R3_OFF = Math.round((ROWW - (7 * KEY + 6 * GAP)) / 2);
 
 const SKEY = 64;
 const SGAP = 9;
@@ -274,10 +275,10 @@ export default function Skills() {
                 color: "rgba(220,220,226,0.6)",
               }}
             >
-              Hover the keys to explore my toolkit. Each lit key is a technology I
-              reach for daily — from prototyping through to shipping production
-              code, spanning languages, frameworks, and the tools that connect
-              them.
+              Hover the keys to explore my toolkit. Each lit key is a technology
+              I reach for daily — from prototyping through to shipping
+              production code, spanning languages, frameworks, and the tools
+              that connect them.
             </p>
             <span
               className="font-jetbrains text-[0.8rem] tracking-[0.12em] uppercase"
@@ -338,7 +339,9 @@ export default function Skills() {
                         <Key key={t.name} tech={t} />
                       ))}
                     </div>
-                    <div style={{ display: "flex", gap: GAP }}>
+                    <div
+                      style={{ display: "flex", gap: GAP, marginLeft: R3_OFF }}
+                    >
                       {row3.map((t) => (
                         <Key key={t.name} tech={t} />
                       ))}

@@ -19,7 +19,7 @@ export default function Contact() {
     <section
       id="contact"
       className="w-full flex flex-col items-center text-center px-6 md:px-14 pt-48 md:pt-64 pb-12"
-      style={{ borderTop: `1px solid ${DIM}`, scrollMarginTop: "-320px" }}
+      style={{ borderTop: `1px solid ${DIM}`, scrollMarginTop: "-320px", background: "#14161f" }}
     >
       <h2
         className="mb-3 font-black leading-tight"

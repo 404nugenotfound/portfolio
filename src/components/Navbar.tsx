@@ -20,18 +20,17 @@ export default function Navbar() {
     >
       <div className="flex justify-between items-center h-full px-6 md:px-8 max-w-container-max mx-auto">
         <span
-          className="text-[34px] text-on-surface transition-all duration-500"
+          className="font-bodoni text-[34px] text-on-surface transition-all duration-500"
           style={{
-            fontFamily: "'Mr Dafoe', cursive",
             fontWeight: 700,
-            letterSpacing: "0.02em",
+            letterSpacing: "0.01em",
           }}
         >
-          
+          NUGS.
         </span>
         <a
           href="#contact"
-          className="px-6 py-2 rounded-lg text-white font-bold transition-all active:scale-95 hover:brightness-110 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)]"
+          className="px-6 py-2 rounded-lg text-white font-bold transition-all active:scale-95 hover:brightness-110 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] cursor-none"
           style={{ backgroundColor: "#6366f1" }}
         >
           Hire Me

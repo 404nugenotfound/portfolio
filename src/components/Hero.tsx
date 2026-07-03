@@ -112,10 +112,10 @@ export default function Hero() {
 
         {/* Name */}
         <h1
-          className="m-0 -ml-1 pb-2 font-black leading-[0.87] tracking-[-0.01em] text-on-surface"
+          className="m-0 -ml-1 pb-1 font-black leading-[0.87] tracking-[-0.01em] text-on-surface"
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: "clamp(2.5rem, 9vw, 4rem)",
+            fontSize: "clamp(2.5rem, 9vw, 5rem)",
           }}
         >
           <span className="block">ANUGERAH</span>
@@ -129,7 +129,7 @@ export default function Hero() {
         </h1>
 
         {/* Bottom row */}
-        <div className="mt-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mt-10 mb-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <p className="max-w-[550px] text-body-lg font-light leading-relaxed text-on-surface-variant">
             <span className="block">
               Building purposeful digital experiences —
