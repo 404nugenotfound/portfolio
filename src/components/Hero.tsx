@@ -72,7 +72,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: "url('/background/background.png')",
+          backgroundImage: "url('/background/background-compressed.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           opacity: 0.32,
