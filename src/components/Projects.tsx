@@ -1,5 +1,12 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+
+const ACCENT = "#6366f1";
+const INK = "rgba(255,255,255,0.92)";
+const MUTED = "rgba(255,255,255,0.52)";
+const FAINT = "rgba(255,255,255,0.32)";
+const DIM = "rgba(255,255,255,0.10)";
+const BG = "#111319";
 
 const projects = [
   {
@@ -7,174 +14,136 @@ const projects = [
     badge: "BRIN Affiliated",
     desc: "Web-based energy forecasting application for Wind Power Plants (PLTB) in collaboration with BRIN, predicting weather-driven energy output using XGB + LSTM ensemble models.",
     tags: ["Next.js", "Flask", "Supabase", "Vercel"],
-    img: "https://images.unsplash.com/photo-1548337138-e87d889cc369?w=800&q=80",
+    img: "/projects/ventara.png",
   },
   {
     name: "SIMJUR",
     badge: "Web App",
     desc: "Departmental financial information system built as PM & Frontend Developer — role-based access control for Students, Treasurer, Secretary, and Department Head.",
     tags: ["React", "Tailwind CSS", "PostgreSQL"],
-    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+    img: "/projects/simjur.png",
   },
   {
     name: "Photo Enhancer Website",
     badge: "Freelance",
     desc: "AI-integrated photo processing platform with Real-ESRGAN model for automated image resolution enhancement and lighting improvement across devices.",
     tags: ["Python", "Flask", "HTML/CSS", "JavaScript"],
-    img: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80",
+    img: "/projects/photo-enhancer.png",
   },
   {
     name: "Portfolio Website – Bhinneka Dev",
     badge: "Freelance",
     desc: "Bespoke company profile website for Bhinneka Dev — managed end-to-end as PM and sole developer, with multiple client revision cycles.",
     tags: ["HTML", "CSS", "JavaScript"],
-    img: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80",
+    img: "/projects/bhinneka-dev.png",
   },
 ];
 
 const n = projects.length;
 const extended = [projects[n - 1], ...projects, projects[0]];
-
-const TRANSITION = "transform 0.6s cubic-bezier(0.65, 0, 0.35, 1)";
+const pad2 = (num: number) => String(num).padStart(2, "0");
 
 export default function Projects() {
   const [activeProject, setActiveProject] = useState<
     (typeof projects)[0] | null
   >(null);
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const touchStartX = useRef(0);
-  const trackIndexRef = useRef(1);
-
-  const render = useCallback((idx: number, instant: boolean) => {
-    const track = trackRef.current;
-    const container = containerRef.current;
-    if (!track || !container) return;
-    const slides = Array.from(track.children) as HTMLElement[];
-    if (!slides.length) return;
-    const slideW = slides[0].offsetWidth;
-
-    if (slideW === 0) {
-      requestAnimationFrame(() => render(idx, instant));
-      return;
-    }
-
-    const centerOffset = (container.offsetWidth - slideW) / 2;
-    track.style.transition = instant ? "none" : TRANSITION;
-    track.style.transform = `translateX(${-(idx * slideW) + centerOffset}px)`;
-    if (instant) {
-      void track.offsetHeight;
-      track.style.transition = TRANSITION;
-    }
-    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
-  }, []);
-
-  const goToTrack = useCallback(
-    (idx: number, instant = false) => {
-      trackIndexRef.current = idx;
-      render(idx, instant);
-      setCurrent((((idx - 1) % n) + n) % n);
-    },
-    [render],
-  );
-
-  const next = useCallback(() => {
-    goToTrack(trackIndexRef.current + 1);
-  }, [goToTrack]);
-
-  const prev = useCallback(() => {
-    goToTrack(trackIndexRef.current - 1);
-  }, [goToTrack]);
-
-  const goToReal = useCallback(
-    (i: number) => {
-      goToTrack(i + 1);
-    },
-    [goToTrack],
+  const [carousel, setCarousel] = useState({ trackIndex: 1, instant: true });
+  const current = useMemo(
+    () => (((carousel.trackIndex - 1) % n) + n) % n,
+    [carousel.trackIndex],
   );
 
   const pausedRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchStartX = useRef(0);
+
+  const goTo = useCallback((idx: number, jump = false) => {
+    setCarousel({ trackIndex: idx, instant: jump });
+  }, []);
+
+  const next = useCallback(() => {
+    setCarousel((c) => ({ trackIndex: c.trackIndex + 1, instant: false }));
+  }, []);
+
+  const prev = useCallback(() => {
+    setCarousel((c) => ({ trackIndex: c.trackIndex - 1, instant: false }));
+  }, []);
 
   const startAuto = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       if (!pausedRef.current) next();
-    }, 4000);
+    }, 4500);
   }, [next]);
 
   const handleTransitionEnd = useCallback(() => {
-    const t = trackIndexRef.current;
-    if (t === n + 1) goToTrack(1, true);
-    else if (t === 0) goToTrack(n, true);
-  }, [goToTrack]);
+    if (carousel.trackIndex === n + 1) goTo(1, true);
+    else if (carousel.trackIndex === 0) goTo(n, true);
+  }, [carousel.trackIndex, goTo]);
 
   useEffect(() => {
-    goToTrack(1, true);
     startAuto();
-    const onResize = () => render(trackIndexRef.current, true);
-    window.addEventListener("resize", onResize);
-
-    const imgs = trackRef.current?.querySelectorAll("img") ?? [];
-    const onImgLoad = () => render(trackIndexRef.current, true);
-    imgs.forEach((img) => img.addEventListener("load", onImgLoad));
-
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      window.removeEventListener("resize", onResize);
-      imgs.forEach((img) => img.removeEventListener("load", onImgLoad));
     };
-  }, []); // eslint-disable-line
+  }, [startAuto]);
 
   return (
     <section
       id="projects"
-      className="w-full"
+      className="w-full min-h-screen flex flex-col justify-center"
       style={{
         background: "linear-gradient(to bottom, #2a2d40, #232538)",
       }}
     >
-      <div className="py-section-padding px-6 md:px-12 max-w-container-max mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end mb-20 reveal">
-          <div className="flex flex-col gap-6">
-            <p
-              className="font-jetbrains text-[1rem] tracking-[0.3em] uppercase"
-              style={{ color: "#818cf8" }}
+      <div className="py-section-padding px-6 md:px-14 max-w-container-max mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-end mb-10 reveal">
+          <div className="flex flex-col gap-5">
+            <span
+              className="text-[1rem] tracking-[0.3em] uppercase"
+              style={{
+                color: ACCENT,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
             >
               — Selected Work
-            </p>
+            </span>
             <h2
               className="font-condensed font-black leading-[0.87]"
               style={{
                 fontSize: "clamp(2.5rem, 6vw, 5rem)",
                 letterSpacing: "-0.01em",
-                color: "#ffffff",
+                color: INK,
               }}
             >
               WORK THAT SHIPS
             </h2>
           </div>
           <p
-            className="leading-[1.6] font-light lg:text-right max-w-[420px] lg:ml-auto"
-            style={{ fontSize: "1.15rem", color: "rgba(220,220,226,0.6)" }}
+            className="text-sm leading-relaxed max-w-[280px] lg:text-right"
+            style={{ color: "#ffffff" }}
           >
             Four projects I&apos;m proud to have built and shipped — from
             research collaborations to freelance work.
           </p>
         </div>
 
-        <div className="relative max-w-350 mx-auto reveal">
+        <div className="relative max-w-[1180px] mx-auto reveal">
           <div
-            ref={containerRef}
-            className="relative overflow-visible"
-            style={{ perspective: "1000px" }}
+            className="overflow-hidden"
+            style={{
+              borderTop: `1px solid ${DIM}`,
+              borderBottom: `1px solid ${DIM}`,
+            }}
           >
             <div
-              ref={trackRef}
               className="flex"
-              style={{ transition: TRANSITION, willChange: "transform" }}
+              style={{
+                transform: `translateX(-${carousel.trackIndex * 100}%)`,
+                transition: carousel.instant
+                  ? "none"
+                  : "transform 0.7s cubic-bezier(0.65,0,0.35,1)",
+              }}
               onTransitionEnd={handleTransitionEnd}
               onMouseEnter={() => {
                 pausedRef.current = true;
@@ -194,142 +163,188 @@ export default function Projects() {
               {extended.map((p, i) => (
                 <div
                   key={`${p.name}-${i}`}
-                  className={`carousel-slide ${i === 1 ? "active" : ""}`}
+                  className="w-full shrink-0 py-6 md:py-8"
                 >
-                  <div
-                    className="rounded-2xl overflow-hidden group h-full transition-all duration-300"
-                    style={{
-                      background: "#1a1c2b",
-                      boxShadow:
-                        "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow =
-                        "0 0 0 1px rgba(99,102,241,0.4), 0 20px 60px rgba(0,0,0,0.5)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow =
-                        "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)";
-                    }}
-                  >
-                    <div className="h-64 bg-surface-container overflow-hidden relative">
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span
-                        className="absolute top-4 right-4 px-3 py-1 rounded-full text-[11px] tracking-[0.08em] capitalize text-white"
+                  <div className="grid grid-cols-1 md:grid-cols-[1.05fr_1fr] gap-10 md:gap-24 items-center">
+                    {/* Image — old card treatment: rounded, shadow-glow hover, badge overlay */}
+                    <div className="flex flex-col gap-3">
+                      <div
+                        className="relative overflow-hidden rounded-2xl group transition-all duration-300"
                         style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontWeight: 700,
-                          background: "rgba(20,20,24,0.45)",
-                          backdropFilter: "blur(8px)",
-                          border: "1px solid rgba(255,255,255,0.18)",
+                          aspectRatio: "16 / 10",
+                          maxHeight: "360px",
+                          background: "#1a1c2b",
+                          boxShadow:
+                            "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow =
+                            "0 0 0 1px rgba(99,102,241,0.4), 0 20px 60px rgba(0,0,0,0.5)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow =
+                            "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)";
                         }}
                       >
-                        {p.badge}
-                      </span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.img}
+                          alt={p.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            e.currentTarget.style.opacity = "0";
+                          }}
+                        />
+                        <span
+                          className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] tracking-[0.15em] uppercase"
+                          style={{
+                            color: INK,
+                            background: "rgba(20,20,24,0.45)",
+                            backdropFilter: "blur(8px)",
+                            border: `1px solid ${DIM}`,
+                            fontFamily: "'JetBrains Mono', monospace",
+                          }}
+                        >
+                          {p.badge}
+                        </span>
+                      </div>
                     </div>
-                    <div className="p-8">
-                      <h3
-                        className="mb-3"
+
+                    {/* Text */}
+                    <div className="flex flex-col gap-5">
+                      <span
+                        className="text-xs tracking-[0.2em]"
                         style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontWeight: 600,
-                          fontSize: "1.45rem",
-                          letterSpacing: "-0.02em",
-                          color: "#ffffff",
+                          color: FAINT,
+                          fontFamily: "'JetBrains Mono', monospace",
+                        }}
+                      >
+                        {pad2(i === 0 ? n : i === n + 1 ? 1 : i)} / {pad2(n)}
+                      </span>
+                      <h3
+                        className="font-condensed font-black leading-[0.95]"
+                        style={{
+                          fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
+                          letterSpacing: "-0.01em",
+                          color: INK,
                         }}
                       >
                         {p.name}
                       </h3>
                       <p
-                        className="mb-6 line-clamp-2"
-                        style={{ color: "rgba(255,255,255,0.6)" }}
+                        className="text-sm leading-relaxed max-w-[46ch] line-clamp-2"
+                        style={{ color: MUTED }}
                       >
                         {p.desc}
                       </p>
-                      <div className="flex flex-wrap gap-2 mb-8">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
                         {p.tags.map((t) => (
                           <span
                             key={t}
-                            className="px-3 py-1 text-[12px] tracking-[0.08em] lowercase rounded-full"
+                            className="text-[11px] tracking-wider lowercase"
                             style={{
+                              color: "#ffffff",
                               fontFamily: "'JetBrains Mono', monospace",
-                              background: "rgba(255,255,255,0.06)",
-                              border: "1px solid rgba(255,255,255,0.1)",
-                              color: "rgba(255,255,255,0.75)",
                             }}
                           >
                             {t}
                           </span>
                         ))}
                       </div>
-                      <button
+                      {/* <button
                         onClick={() => setActiveProject(p)}
-                        className="flex items-center font-bold hover:translate-x-2 transition-all duration-300"
-                        style={{ color: "#ffffff" }}
+                        className="group mt-3 flex items-center gap-2 text-sm font-medium w-fit"
+                        style={{ color: INK }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.color = "#818cf8")
+                          (e.currentTarget.style.color = ACCENT)
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.color = "#ffffff")
+                          (e.currentTarget.style.color = INK)
                         }
                       >
-                        View Project{" "}
-                        <span className="material-symbols-outlined ml-2">
-                          arrow_forward
+                        View project
+                        <span className="transition-transform duration-300 group-hover:translate-x-1">
+                          →
                         </span>
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-
-            <button
-              onClick={() => {
-                prev();
-                startAuto();
-              }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full flex items-center justify-center text-white hover:text-primary hover:scale-110 active:scale-95 transition-all"
-              style={{
-                background: "#1a1c2b",
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.08)",
-              }}
-            >
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button
-              onClick={() => {
-                next();
-                startAuto();
-              }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full flex items-center justify-center text-white hover:text-primary hover:scale-110 active:scale-95 transition-all"
-              style={{
-                background: "#1a1c2b",
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.08)",
-              }}
-            >
-              <span className="material-symbols-outlined">chevron_right</span>
-            </button>
           </div>
 
-          <div className="flex justify-center space-x-3 mt-12">
-            {projects.map((_, i) => (
+          {/* Controls — numbered index, hairline segments + old dot row combined */}
+          <div className="flex items-center justify-between pt-6">
+            <span
+              className="text-xs tracking-[0.2em]"
+              style={{
+                color: FAINT,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+            >
+              {pad2(current + 1)} — {pad2(n)}
+            </span>
+
+            <div className="flex items-center gap-3">
+              {projects.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    goTo(i + 1);
+                    startAuto();
+                  }}
+                  aria-label={`Go to project ${i + 1}`}
+                  className={`h-2 rounded-full transition-all duration-300 ${i === current ? "w-6" : "w-2"}`}
+                  style={{
+                    background:
+                      i === current ? ACCENT : "rgba(255,255,255,0.25)",
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
               <button
-                key={i}
                 onClick={() => {
-                  goToReal(i);
+                  prev();
                   startAuto();
                 }}
-                aria-label={`Go to slide ${i + 1}`}
-                className={`indicator-dot h-2 rounded-full bg-white/70 cursor-pointer ${
-                  i === current ? "active" : "w-2"
-                }`}
-              />
-            ))}
+                aria-label="Previous project"
+                className="flex size-9 items-center justify-center rounded-full transition-colors duration-200"
+                style={{ border: `1px solid ${DIM}`, color: MUTED }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = ACCENT;
+                  e.currentTarget.style.color = INK;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = DIM;
+                  e.currentTarget.style.color = MUTED;
+                }}
+              >
+                ←
+              </button>
+              <button
+                onClick={() => {
+                  next();
+                  startAuto();
+                }}
+                aria-label="Next project"
+                className="flex size-9 items-center justify-center rounded-full transition-colors duration-200"
+                style={{ border: `1px solid ${DIM}`, color: MUTED }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = ACCENT;
+                  e.currentTarget.style.color = INK;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = DIM;
+                  e.currentTarget.style.color = MUTED;
+                }}
+              >
+                →
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -337,26 +352,43 @@ export default function Projects() {
       {activeProject && (
         <div
           className="fixed inset-0 z-[999] flex items-center justify-center p-6"
-          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+          style={{
+            background: "rgba(8,9,13,0.82)",
+            backdropFilter: "blur(6px)",
+          }}
           onClick={() => setActiveProject(null)}
         >
           <div
-            className="relative w-full max-w-2xl rounded-2xl overflow-hidden"
+            className="relative w-full max-w-xl rounded-2xl overflow-hidden"
             style={{
-              background: "#1a1c2b",
+              background: "#14151f",
               boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setActiveProject(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center text-white"
-              style={{ background: "rgba(0,0,0,0.5)" }}
+              aria-label="Close"
+              className="absolute top-4 right-4 z-10 flex size-8 items-center justify-center rounded-full transition-colors duration-200"
+              style={{
+                border: `1px solid ${DIM}`,
+                color: MUTED,
+                background: "rgba(10,11,15,0.6)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = ACCENT;
+                e.currentTarget.style.color = INK;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = DIM;
+                e.currentTarget.style.color = MUTED;
+              }}
             >
-              <span className="material-symbols-outlined">close</span>
+              ✕
             </button>
 
-            <div className="h-72 overflow-hidden">
+            <div className="aspect-[16/9] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={activeProject.img}
                 alt={activeProject.name}
@@ -365,48 +397,41 @@ export default function Projects() {
             </div>
 
             <div className="p-8">
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex items-start justify-between gap-4 mb-4">
                 <h3
+                  className="font-condensed font-black leading-none"
                   style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: 600,
-                    fontSize: "1.4rem",
-                    letterSpacing: "-0.02em",
-                    color: "#ffffff",
+                    fontSize: "1.75rem",
+                    letterSpacing: "-0.01em",
+                    color: INK,
                   }}
                 >
                   {activeProject.name}
                 </h3>
                 <span
-                  className="px-3 py-1 rounded-full text-[11px] tracking-[0.08em] capitalize text-white shrink-0 ml-4"
+                  className="text-[10px] tracking-[0.15em] uppercase shrink-0 pt-1.5"
                   style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: 700,
-                    background: "rgba(255,255,255,0.08)",
-                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: FAINT,
+                    fontFamily: "'JetBrains Mono', monospace",
                   }}
                 >
                   {activeProject.badge}
                 </span>
               </div>
-
               <p
-                className="mb-6 leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.7)" }}
+                className="mb-6 text-sm leading-relaxed"
+                style={{ color: MUTED }}
               >
                 {activeProject.desc}
               </p>
-
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {activeProject.tags.map((t) => (
                   <span
                     key={t}
-                    className="px-3 py-1 text-[12px] tracking-[0.08em] lowercase rounded-full"
+                    className="text-[11px] tracking-wider lowercase"
                     style={{
+                      color: FAINT,
                       fontFamily: "'JetBrains Mono', monospace",
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "rgba(255,255,255,0.75)",
                     }}
                   >
                     {t}
