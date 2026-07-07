@@ -23,8 +23,8 @@ export default function Home() {
         <Experience />
         <Certifications />
         <Contact />
+        <Footer />
       </main>
-      <Footer />
       <CustomCursor />
     </>
   )

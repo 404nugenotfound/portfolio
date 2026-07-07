@@ -33,7 +33,7 @@ const socials = [
 export default function Footer() {
   return (
     <footer
-      className="relative w-full overflow-hidden px-6 md:px-14 pt-10 pb-12 bg-background"
+      className="relative w-full flex-shrink-0 overflow-hidden px-6 md:px-14 pt-6 pb-8 bg-background"
       style={{ borderTop: `1px solid ${DIM}` }}
     >
       {/* Ghost "LET'S TALK" */}
@@ -44,7 +44,7 @@ export default function Footer() {
         <span
           className="whitespace-nowrap font-black leading-none"
           style={{
-            fontSize: "clamp(120px, 28vw, 320px)", // lebih gede dari LET'S TALK.
+            fontSize: "clamp(100px, 22vw, 280px)",
             color: "transparent",
             WebkitTextStroke: `1px rgba(255,255,255,0.16)`,
             letterSpacing: "-0.04em",
@@ -55,7 +55,7 @@ export default function Footer() {
       </div>
 
       {/* Top row */}
-      <div className="relative flex items-center justify-between mb-16 md:mb-20">
+      <div className="relative flex items-center justify-between mb-6 md:mb-8">
         <span
           className="text-xs tracking-widest uppercase"
           style={{ color: DIM, fontWeight: 500 }}
@@ -80,7 +80,7 @@ export default function Footer() {
             BACK TO TOP
           </span>
           <span
-            className="flex size-10 items-center justify-center rounded-full transition-all duration-200"
+            className="flex size-9 items-center justify-center rounded-full transition-all duration-200"
             style={{
               background: SURFACE,
               border: `1px solid rgba(255,255,255,0.12)`,
@@ -97,7 +97,7 @@ export default function Footer() {
             }}
           >
             <ArrowUp
-              size={15}
+              size={14}
               className="text-white/70"
               style={{ strokeWidth: 2 }}
             />
@@ -106,9 +106,9 @@ export default function Footer() {
       </div>
 
       {/* Middle */}
-      <div className="relative mb-16 md:mb-20">
+      <div className="relative mb-6 md:mb-14">
         <p
-          className="mb-3 text-md tracking-widest uppercase font-medium"
+          className="mb-1.5 text-xs tracking-widest uppercase font-medium"
           style={{ color: INDIGO, letterSpacing: "0.18em" }}
         >
           HAVE A PROJECT IN MIND?
@@ -120,7 +120,7 @@ export default function Footer() {
           <h2
             className="font-black leading-none transition-colors duration-300"
             style={{
-              fontSize: "clamp(52px, 10vw, 110px)",
+              fontSize: "clamp(40px, 7vw, 86px)",
               color: "rgba(255,255,255,0.88)",
               letterSpacing: "-0.04em",
             }}
@@ -138,7 +138,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom row */}
-      <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <nav className="flex flex-wrap gap-3">
           {socials.map(({ label, svg, href }) => (
             <a
@@ -146,7 +146,7 @@ export default function Footer() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-semibold tracking-widest uppercase transition-all duration-200"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 mt-8 text-xs font-semibold tracking-widest uppercase transition-all duration-200"
               style={{
                 border: `1px solid rgba(255,255,255,0.18)`,
                 color: MUTED,
