@@ -263,7 +263,6 @@ export default function Contact() {
               fontSize: "clamp(32px, 4.5vw, 60px)",
               letterSpacing: "-0.02em",
               color: INK,
-              textWrap: "balance" as any,
             }}
           >
             Got an idea? Let&apos;s make it{" "}
@@ -380,7 +379,7 @@ export default function Contact() {
                 Message sent!
               </p>
               <p className="text-xs max-w-[26ch]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                I'll get back to your email soon, usually within 1–2 days.
+                I&apos;ll get back to your email soon, usually within 1–2 days.
               </p>
               <button
                 onClick={resetForm}
