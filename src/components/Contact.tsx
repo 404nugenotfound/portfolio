@@ -270,7 +270,7 @@ export default function Contact() {
         {/* ------------------------------------------------------------ */}
         {/* Left — statement + direct contact                            */}
         {/* ------------------------------------------------------------ */}
-        <div className="flex flex-col text-left self-start h-fit pt-7">
+        <div className="flex flex-col text-left self-start h-fit pt-8">
           <span
             className="mb-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em]"
             style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}

@@ -1,9 +1,26 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLAnchorElement>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  // Hero overlap fix — Loader dispatches this right as its exit wipe
+  // *starts*, not when it finishes, so this entrance begins while the
+  // curtain is still moving instead of waiting for it to fully clear.
+  useEffect(() => {
+    const onReveal = () => setRevealed(true);
+    window.addEventListener("loader:reveal", onReveal);
+    // Fallback: if Loader isn't mounted for some reason (e.g. dev hot
+    // reload skipped it), don't leave Hero stuck invisible forever.
+    const fallback = setTimeout(() => setRevealed(true), 3000);
+    return () => {
+      window.removeEventListener("loader:reveal", onReveal);
+      clearTimeout(fallback);
+    };
+  }, []);
 
   // Film grain
   useEffect(() => {
@@ -106,16 +123,28 @@ export default function Hero() {
       {/* Content — bottom left */}
       <div className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-gutter pb-16 md:pb-14">
         {/* Eyebrow */}
-        <p className="mb-6 font-mono text-[0.9rem] tracking-[0.3em] uppercase text-primary">
+        <p
+          data-cursor="text"
+          className="mb-6 font-mono text-[0.9rem] tracking-[0.3em] uppercase text-primary"
+          style={{
+            opacity: revealed ? 1 : 0,
+            transform: revealed ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 550ms cubic-bezier(0.23,1,0.32,1), transform 550ms cubic-bezier(0.23,1,0.32,1)",
+          }}
+        >
           — Fullstack Developer & Designer
         </p>
 
         {/* Name */}
         <h1
+          data-cursor="text"
           className="m-0 -ml-1 pb-1 font-black leading-[0.87] tracking-[-0.01em] text-on-surface"
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: "clamp(2.5rem, 9vw, 5rem)",
+            opacity: revealed ? 1 : 0,
+            transform: revealed ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 650ms cubic-bezier(0.23,1,0.32,1) 80ms, transform 650ms cubic-bezier(0.23,1,0.32,1) 80ms",
           }}
         >
           <span className="block">ANUGERAH</span>
@@ -129,8 +158,15 @@ export default function Hero() {
         </h1>
 
         {/* Bottom row */}
-        <div className="mt-10 mb-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-[550px] text-body-lg font-light leading-relaxed text-on-surface-variant">
+        <div
+          className="mt-10 mb-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+          style={{
+            opacity: revealed ? 1 : 0,
+            transform: revealed ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 550ms cubic-bezier(0.23,1,0.32,1) 200ms, transform 550ms cubic-bezier(0.23,1,0.32,1) 200ms",
+          }}
+        >
+          <p data-cursor="text" className="max-w-[550px] text-body-lg font-light leading-relaxed text-on-surface-variant">
             <span className="block">
               Building purposeful digital experiences —
             </span>
@@ -139,9 +175,11 @@ export default function Hero() {
             </span>
           </p>
 
-          {/* CTA */}
+          {/* CTA — magnetic hover on the icon circle */}
           <a
+            ref={ctaRef}
             href="#projects"
+            data-cursor="link"
             className="group inline-flex items-center gap-3 self-start md:self-auto"
           >
             <span className="text-label-md tracking-[0.15em] uppercase text-primary transition-opacity duration-200 group-hover:opacity-70">

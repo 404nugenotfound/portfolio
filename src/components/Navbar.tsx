@@ -3,11 +3,28 @@ import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [visible, setVisible] = useState(false);
+  const [logoVisible, setLogoVisible] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 80);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Shared element transition landing spot. Loader flies its own "NUGS."
+  // wordmark to this exact element's position, then fires this event the
+  // instant it lands — that's the cue to swap on the real navbar logo
+  // (which stays invisible until then, so there's never a duplicate).
+  useEffect(() => {
+    const onArrived = () => setLogoVisible(true);
+    window.addEventListener("loader:logo-arrived", onArrived);
+    // Fallback: if Loader can't find/measure this element for any reason,
+    // don't leave the logo invisible forever.
+    const fallback = setTimeout(() => setLogoVisible(true), 3000);
+    return () => {
+      window.removeEventListener("loader:logo-arrived", onArrived);
+      clearTimeout(fallback);
+    };
   }, []);
 
   return (
@@ -20,10 +37,13 @@ export default function Navbar() {
     >
       <div className="flex justify-between items-center h-full px-6 md:px-8 max-w-container-max mx-auto">
         <span
+          id="nav-logo"
           className="font-bodoni text-[34px] text-on-surface transition-all duration-500"
           style={{
             fontWeight: 700,
             letterSpacing: "0.01em",
+            opacity: logoVisible ? 1 : 0,
+            transition: "opacity 150ms ease-out",
           }}
         >
           NUGS.

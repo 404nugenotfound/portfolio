@@ -9,10 +9,12 @@ import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 import CustomCursor from '@/components/CustomCursor'
 import RevealInit from '@/components/RevealInit'
+import Loader from '@/components/Loader'
 
 export default function Home() {
   return (
     <>
+      <Loader />
       <RevealInit />
       <Navbar />
       <main>

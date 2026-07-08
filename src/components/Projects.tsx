@@ -56,19 +56,38 @@ export default function Projects() {
   const pausedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartX = useRef(0);
+  const clampTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goTo = useCallback((idx: number, jump = false) => {
     setCarousel({ trackIndex: idx, instant: jump });
   }, []);
 
+  const clampIfNeeded = useCallback(
+    (idx: number) => {
+      // ADD
+      if (idx > n) goTo(1, true);
+      else if (idx < 1) goTo(n, true);
+    },
+    [goTo],
+  );
+
   const next = useCallback(() => {
-    setCarousel((c) => ({ trackIndex: c.trackIndex + 1, instant: false }));
-  }, []);
+    setCarousel((c) => {
+      const idx = c.trackIndex + 1;
+      if (clampTimerRef.current) clearTimeout(clampTimerRef.current);
+      clampTimerRef.current = setTimeout(() => clampIfNeeded(idx), 720);
+      return { trackIndex: idx, instant: false };
+    });
+  }, [clampIfNeeded]);
 
   const prev = useCallback(() => {
-    setCarousel((c) => ({ trackIndex: c.trackIndex - 1, instant: false }));
-  }, []);
-
+    setCarousel((c) => {
+      const idx = c.trackIndex - 1;
+      if (clampTimerRef.current) clearTimeout(clampTimerRef.current);
+      clampTimerRef.current = setTimeout(() => clampIfNeeded(idx), 720);
+      return { trackIndex: idx, instant: false };
+    });
+  }, [clampIfNeeded]);
   const startAuto = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
@@ -77,16 +96,35 @@ export default function Projects() {
   }, [next]);
 
   const handleTransitionEnd = useCallback(() => {
-    if (carousel.trackIndex === n + 1) goTo(1, true);
-    else if (carousel.trackIndex === 0) goTo(n, true);
-  }, [carousel.trackIndex, goTo]);
+    if (clampTimerRef.current) clearTimeout(clampTimerRef.current);
+    clampIfNeeded(carousel.trackIndex);
+  }, [carousel.trackIndex, clampIfNeeded]);
 
   useEffect(() => {
     startAuto();
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        pausedRef.current = true;
+        if (timerRef.current) clearInterval(timerRef.current);
+      } else {
+        // resync index ke range valid, hindari drift
+        setCarousel((c) => ({
+          trackIndex: current + 1, // current udah dihitung via modulo, aman
+          instant: true,
+        }));
+        pausedRef.current = false;
+        startAuto();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (clampTimerRef.current) clearTimeout(clampTimerRef.current); // ADD
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [startAuto]);
+  }, [startAuto, current]);
 
   return (
     <section
@@ -174,16 +212,7 @@ export default function Projects() {
                           aspectRatio: "16 / 10",
                           maxHeight: "360px",
                           background: "#1a1c2b",
-                          boxShadow:
-                            "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.boxShadow =
-                            "0 0 0 1px rgba(99,102,241,0.4), 0 20px 60px rgba(0,0,0,0.5)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.boxShadow =
-                            "0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.45)";
+                          boxShadow: "none",
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -28,12 +28,21 @@ const socials = [
       </svg>
     ),
   },
+  {
+  label: "INSTAGRAM",
+  href: "https://instagram.com/nuugee.__",
+  svg: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+    </svg>
+  ),
+},
 ];
 
 export default function Footer() {
   return (
     <footer
-      className="relative w-full flex-shrink-0 overflow-hidden px-6 md:px-14 pt-6 pb-8 bg-background"
+      className="relative w-full flex-shrink-0 overflow-hidden px-6 md:px-14 pt-4 pb-5 bg-background"
       style={{ borderTop: `1px solid ${DIM}` }}
     >
       {/* Ghost "LET'S TALK" */}
@@ -44,9 +53,9 @@ export default function Footer() {
         <span
           className="whitespace-nowrap font-black leading-none"
           style={{
-            fontSize: "clamp(100px, 22vw, 280px)",
+            fontSize: "clamp(100px, 22vw, 260px)",
             color: "transparent",
-            WebkitTextStroke: `1px rgba(255,255,255,0.16)`,
+            WebkitTextStroke: `1px rgba(255,255,255,0.1)`,
             letterSpacing: "-0.04em",
           }}
         >
@@ -55,7 +64,7 @@ export default function Footer() {
       </div>
 
       {/* Top row */}
-      <div className="relative flex items-center justify-between mb-6 md:mb-8">
+       <div className="relative flex items-center justify-between mb-4 md:mb-5">
         <span
           className="text-xs tracking-widest uppercase"
           style={{ color: DIM, fontWeight: 500 }}
@@ -106,7 +115,7 @@ export default function Footer() {
       </div>
 
       {/* Middle */}
-      <div className="relative mb-6 md:mb-14">
+      <div className="relative mb-4 md:mb-20">
         <p
           className="mb-1.5 text-xs tracking-widest uppercase font-medium"
           style={{ color: INDIGO, letterSpacing: "0.18em" }}
@@ -120,7 +129,7 @@ export default function Footer() {
           <h2
             className="font-black leading-none transition-colors duration-300"
             style={{
-              fontSize: "clamp(40px, 7vw, 86px)",
+              fontSize: "clamp(32px, 5vw, 60px)",
               color: "rgba(255,255,255,0.88)",
               letterSpacing: "-0.04em",
             }}
@@ -139,14 +148,14 @@ export default function Footer() {
 
       {/* Bottom row */}
       <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <nav className="flex flex-wrap gap-3">
+        <nav className="flex flex-wrap gap-3 md:gap-4">
           {socials.map(({ label, svg, href }) => (
             <a
               key={label}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 mt-8 text-xs font-semibold tracking-widest uppercase transition-all duration-200"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 mt-3 text-xs font-semibold tracking-widest uppercase transition-all duration-200"
               style={{
                 border: `1px solid rgba(255,255,255,0.18)`,
                 color: MUTED,
