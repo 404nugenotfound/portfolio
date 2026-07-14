@@ -83,6 +83,7 @@ export default function Loader() {
     if (phase !== "count" || reducedMotion.current) return;
 
     let raf: number;
+    let holdTimer: ReturnType<typeof setTimeout> | undefined;
     const start = performance.now();
 
     const tick = (now: number) => {
@@ -108,11 +109,14 @@ export default function Loader() {
       if (value < 100) {
         raf = requestAnimationFrame(tick);
       } else {
-        setTimeout(() => setPhase("exit"), HOLD_MS);
+        holdTimer = setTimeout(() => setPhase("exit"), HOLD_MS);
       }
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (holdTimer !== undefined) clearTimeout(holdTimer);
+    };
   }, [phase]);
 
   useEffect(() => {
@@ -121,20 +125,38 @@ export default function Loader() {
     const el = rootRef.current;
     if (!el) return;
 
+    let cancelled = false;
+    let clone: HTMLElement | null = null;
+    let flight: Animation | null = null;
+    let wipe: Animation | null = null;
+
     document.body.style.overflow = "";
 
     // Hero overlap handoff — fires as the wipe *starts*, not when it ends.
     window.dispatchEvent(new CustomEvent("loader:reveal"));
     document.documentElement.classList.add("loader-exiting");
 
+    const finish = () => {
+      if (cancelled) return;
+      document.documentElement.classList.remove("loader-exiting");
+      setPhase("done");
+    };
+
     if (reducedMotion.current) {
-      el.animate([{ opacity: 1 }, { opacity: 0 }], {
+      const fade = el.animate([{ opacity: 1 }, { opacity: 0 }], {
         duration: 200,
         easing: "ease",
         fill: "forwards",
-      }).onfinish = () => setPhase("done");
+      });
+      fade.onfinish = () => {
+        if (!cancelled) setPhase("done");
+      };
       window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
-      return;
+      return () => {
+        cancelled = true;
+        fade.cancel();
+        document.documentElement.classList.remove("loader-exiting");
+      };
     }
 
     // Shared element transition: the wordmark itself flies from its
@@ -150,7 +172,8 @@ export default function Loader() {
 
       source.style.visibility = "hidden"; // the clone takes over visually
 
-      const clone = source.cloneNode(true) as HTMLElement;
+      clone = source.cloneNode(true) as HTMLElement;
+      clone.dataset.loaderClone = "true";
       clone.style.position = "fixed";
       clone.style.left = `${sourceRect.left}px`;
       clone.style.top = `${sourceRect.top}px`;
@@ -169,7 +192,7 @@ export default function Loader() {
       // now-translated top-left origin — so it lands at the target's
       // corner and scales in place there, rather than scaling in the
       // wrong spot and jumping.
-      const flight = clone.animate(
+      flight = clone.animate(
         [
           { transform: "translate(0px, 0px) scale(1)" },
           { transform: `translate(${dx}px, ${dy}px) scale(${scale})` },
@@ -178,7 +201,9 @@ export default function Loader() {
       );
 
       flight.onfinish = () => {
-        clone.remove();
+        if (cancelled) return;
+        clone?.remove();
+        clone = null;
         window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
       };
     } else {
@@ -186,12 +211,22 @@ export default function Loader() {
       window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
     }
 
-    el.animate(
+    wipe = el.animate(
       [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }],
       { duration: EXIT_MS, easing: EASE_OUT, fill: "forwards" },
-    ).onfinish = () => {
+    );
+    wipe.onfinish = finish;
+
+    return () => {
+      cancelled = true;
+      flight?.cancel();
+      wipe?.cancel();
+      clone?.remove();
+      document
+        .querySelectorAll('[data-loader-clone="true"]')
+        .forEach((node) => node.remove());
+      if (source) source.style.visibility = "";
       document.documentElement.classList.remove("loader-exiting");
-      setPhase("done");
     };
   }, [phase]);
 
@@ -300,12 +335,8 @@ export default function Loader() {
       {/* Counter — text also written directly via ref, tabular-nums so digits don't jiggle */}
       <span
         ref={countLabelRef}
-        className="text-sm tracking-[0.2em]"
-        style={{
-          color: "rgba(255,255,255,0.4)",
-          fontFamily: "'JetBrains Mono', monospace",
-          fontVariantNumeric: "tabular-nums",
-        }}
+        className="font-jetbrains text-sm tracking-[0.2em] tabular-nums"
+        style={{ color: "rgba(255,255,255,0.4)" }}
       >
         00 / 100
       </span>
