@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Tech {
   name: string;
@@ -48,19 +48,40 @@ const creativeRow: Tech[] = [
   { name: "CapCut", localSrc: "/icons/capcut-logo.svg" },
 ];
 
-const KEY = 78;
-const GAP = 9;
-const PAD = 18;
-const BED = 14;
+// Desktop (untouched) sizing
+const KEY_D = 78;
+const GAP_D = 9;
+const PAD_D = 18;
+const BED_D = 14;
 
-const ROWW = 8 * KEY + 7 * GAP;
-const R1_OFF = Math.round((ROWW - (6 * KEY + 5 * GAP)) / 2);
-const R3_OFF = Math.round((ROWW - (7 * KEY + 6 * GAP)) / 2);
+const SKEY_D = 64;
+const SGAP_D = 9;
+const SPAD_D = 16;
+const SBED_D = 12;
 
-const SKEY = 64;
-const SGAP = 9;
-const SPAD = 16;
-const SBED = 12;
+// Mobile sizing — scaled down so the keyboard fits inside the viewport
+const KEY_M = 30;
+const GAP_M = 5;
+const PAD_M = 8;
+const BED_M = 8;
+
+const SKEY_M = 46;
+const SGAP_M = 6;
+const SPAD_M = 8;
+const SBED_M = 8;
+
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 
 function getIconSrc(tech: Tech) {
   if (tech.localSrc) return tech.localSrc;
@@ -69,13 +90,19 @@ function getIconSrc(tech: Tech) {
   return null;
 }
 
-function Key({ tech, size = KEY }: { tech: Tech; size?: number }) {
+function Key({ tech, size }: { tech: Tech; size: number }) {
   const [on, setOn] = useState(false);
   const iconSrc = getIconSrc(tech);
+  const iconSize = Math.round(size * 0.46);
 
   return (
     <div
-      style={{ position: "relative", flexShrink: 0, zIndex: on ? 20 : 1 }}
+      style={{
+        position: "relative",
+        flexShrink: 0,
+        zIndex: on ? 20 : 1,
+        cursor: "none",
+      }}
       onMouseEnter={() => setOn(true)}
       onMouseLeave={() => setOn(false)}
     >
@@ -168,7 +195,7 @@ function Key({ tech, size = KEY }: { tech: Tech; size?: number }) {
             justifyContent: "center",
             position: "relative",
             overflow: "hidden",
-            cursor: "default",
+            cursor: "none",
             userSelect: "none" as const,
           }}
         >
@@ -194,8 +221,8 @@ function Key({ tech, size = KEY }: { tech: Tech; size?: number }) {
             <img
               src={iconSrc}
               alt={tech.name}
-              width={size === KEY ? 36 : 28}
-              height={size === KEY ? 36 : 28}
+              width={iconSize}
+              height={iconSize}
               style={{
                 objectFit: "contain",
                 position: "relative",
@@ -214,7 +241,7 @@ function Key({ tech, size = KEY }: { tech: Tech; size?: number }) {
               style={{
                 position: "relative",
                 zIndex: 1,
-                fontSize: size === KEY ? 18 : 15,
+                fontSize: Math.round(size * 0.23),
                 fontWeight: 800,
                 letterSpacing: "0.02em",
                 color: on ? "#a5aafa" : "rgba(255,255,255,0.85)",
@@ -234,6 +261,22 @@ function Key({ tech, size = KEY }: { tech: Tech; size?: number }) {
 }
 
 export default function Skills() {
+  const isMobile = useIsMobile();
+
+  const KEY = isMobile ? KEY_M : KEY_D;
+  const GAP = isMobile ? GAP_M : GAP_D;
+  const PAD = isMobile ? PAD_M : PAD_D;
+  const BED = isMobile ? BED_M : BED_D;
+
+  const SKEY = isMobile ? SKEY_M : SKEY_D;
+  const SGAP = isMobile ? SGAP_M : SGAP_D;
+  const SPAD = isMobile ? SPAD_M : SPAD_D;
+  const SBED = isMobile ? SBED_M : SBED_D;
+
+  const ROWW = 8 * KEY + 7 * GAP;
+  const R1_OFF = Math.round((ROWW - (6 * KEY + 5 * GAP)) / 2);
+  const R3_OFF = Math.round((ROWW - (7 * KEY + 6 * GAP)) / 2);
+
   return (
     <section
       id="skills"
@@ -289,7 +332,7 @@ export default function Skills() {
           </div>
 
           {/* Right — Main Keyboard + Beyond Code label + Mini Keyboard, stacked */}
-          <div className="reveal flex flex-col items-center gap-10 pr-6">
+          <div className="reveal flex flex-col items-center gap-10 pr-6 w-full max-w-full overflow-x-hidden">
             {/* Main Keyboard (Dev Stack) */}
             <div
               style={{ perspective: "1800px", perspectiveOrigin: "50% 30%" }}
@@ -310,7 +353,6 @@ export default function Skills() {
                       "0 6px 30px rgba(0,0,0,0.7)",
                       "0 2px 8px rgba(0,0,0,0.5)",
                     ].join(", "),
-                    
                   }}
                 >
                   <div
@@ -329,22 +371,22 @@ export default function Skills() {
                     }}
                   >
                     <div
-                      style={{ display: "flex", gap: GAP, marginLeft: R1_OFF}}
+                      style={{ display: "flex", gap: GAP, marginLeft: R1_OFF }}
                     >
                       {row1.map((t) => (
-                        <Key key={t.name} tech={t} />
+                        <Key key={t.name} tech={t} size={KEY} />
                       ))}
                     </div>
                     <div style={{ display: "flex", gap: GAP }}>
                       {row2.map((t) => (
-                        <Key key={t.name} tech={t} />
+                        <Key key={t.name} tech={t} size={KEY} />
                       ))}
                     </div>
                     <div
                       style={{ display: "flex", gap: GAP, marginLeft: R3_OFF }}
                     >
                       {row3.map((t) => (
-                        <Key key={t.name} tech={t} />
+                        <Key key={t.name} tech={t} size={KEY} />
                       ))}
                     </div>
                   </div>

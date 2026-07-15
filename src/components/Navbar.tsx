@@ -80,52 +80,8 @@ export default function Navbar() {
           >
             Hire Me
           </a>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
-            className="flex size-10 items-center justify-center rounded-lg border border-white/10 text-on-surface"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            )}
-          </button>
         </div>
       </div>
-
-      {/* Mobile drawer */}
-      {menuOpen && (
-        <div
-          className="md:hidden fixed inset-0 top-16 z-40 bg-[#09090E]/95 backdrop-blur-xl"
-          onClick={closeMenu}
-        >
-          <nav
-            className="flex flex-col gap-1 px-6 py-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {navLinks.map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                onClick={closeMenu}
-                className="py-3 text-lg font-medium text-on-surface border-b border-white/5"
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      )}
     </nav>
   );
 }
