@@ -188,24 +188,31 @@ export default function Loader() {
       const dy = targetRect.top - sourceRect.top;
       const scale = targetRect.height / sourceRect.height;
 
-      // translate() runs first, scale() then happens anchored at the
-      // now-translated top-left origin — so it lands at the target's
-      // corner and scales in place there, rather than scaling in the
-      // wrong spot and jumping.
-      flight = clone.animate(
-        [
-          { transform: "translate(0px, 0px) scale(1)" },
-          { transform: `translate(${dx}px, ${dy}px) scale(${scale})` },
-        ],
-        { duration: EXIT_MS, easing: EASE_OUT, fill: "forwards" },
-      );
-
-      flight.onfinish = () => {
-        if (cancelled) return;
-        clone?.remove();
+      if (!isFinite(scale) || scale <= 0) {
+        clone.remove();
         clone = null;
+        source.style.visibility = "";
         window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
-      };
+      } else {
+        // translate() runs first, scale() then happens anchored at the
+        // now-translated top-left origin — so it lands at the target's
+        // corner and scales in place there, rather than scaling in the
+        // wrong spot and jumping.
+        flight = clone.animate(
+          [
+            { transform: "translate(0px, 0px) scale(1)" },
+            { transform: `translate(${dx}px, ${dy}px) scale(${scale})` },
+          ],
+          { duration: EXIT_MS, easing: EASE_OUT, fill: "forwards" },
+        );
+
+        flight.onfinish = () => {
+          if (cancelled) return;
+          clone?.remove();
+          clone = null;
+          window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
+        };
+      }
     } else {
       // Navbar logo not found/mounted — skip the flight, just reveal it.
       window.dispatchEvent(new CustomEvent("loader:logo-arrived"));
@@ -246,8 +253,7 @@ export default function Loader() {
       {/* Mark: <N/> drawn with stroke-dashoffset (line drawing) */}
       <svg
         viewBox="0 0 160 80"
-        width="220"
-        height="110"
+        style={{ width: "clamp(160px, 55vw, 220px)", height: "clamp(80px, 28vw, 110px)" }}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -308,7 +314,7 @@ export default function Loader() {
       {/* Wordmark — enters as the mark is finishing, not after a separate wait */}
       <span
         ref={wordmarkRef}
-        className="font-bodoni text-[34px] tracking-wide"
+        className="font-bodoni text-[26px] md:text-[34px] tracking-wide"
         style={{
           color: INK,
           fontWeight: 700,
@@ -324,7 +330,7 @@ export default function Loader() {
       {/* Divider — width driven directly via ref in the rAF loop above, no React state */}
       <div
         className="h-px overflow-hidden"
-        style={{ width: 160, background: "rgba(255,255,255,0.10)" }}
+        style={{ width: "clamp(120px, 40vw, 160px)", background: "rgba(255,255,255,0.10)" }}
       >
         <div
           ref={barRef}

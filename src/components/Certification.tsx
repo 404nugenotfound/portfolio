@@ -33,12 +33,12 @@ export default function Certifications() {
   return (
     <section
       id="certifications"
-      className="w-full"
+      className="w-full scroll-mt-16 md:scroll-mt-24"
       style={{
         background: "linear-gradient(to bottom, #1c1e2c, #14161f)",
       }}
     >
-      <div className="pt-16 pb-48 md:pb-64 px-6 md:px-12 max-w-container-max mx-auto">
+      <div className="pt-16 pb-20 md:pb-64 px-6 md:px-12 max-w-container-max mx-auto">
         {/* Eyebrow + headline — same pattern as other sections */}
         <div className="flex flex-col items-center gap-6 mb-12 reveal">
           <p
@@ -62,7 +62,7 @@ export default function Certifications() {
           {certs.map((c) => (
             <div
               key={c.title}
-              className="p-8 rounded-2xl flex flex-col items-center text-center reveal"
+              className="p-5 sm:p-8 rounded-2xl flex flex-col items-center text-center reveal"
               style={{
                 background: "#1a1c2b",
                 boxShadow:
@@ -70,13 +70,13 @@ export default function Certifications() {
               }}
             >
               <span
-                className="material-symbols-outlined text-4xl mb-8"
+                className="material-symbols-outlined text-4xl mb-4 sm:mb-8"
                 style={{ color: "#818cf8" }}
               >
                 {c.icon}
               </span>
               <h4
-                className="font-condensed font-black uppercase text-xl mb-3 min-h-[3rem] flex items-center justify-center text-white"
+                className="font-condensed font-black uppercase text-xl mb-3 sm:min-h-[3rem] flex items-center justify-center text-white"
                 style={{ letterSpacing: "0.01em" }}
               >
                 {c.title}

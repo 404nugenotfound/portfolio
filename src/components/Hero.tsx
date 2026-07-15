@@ -29,7 +29,12 @@ export default function Hero() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     let animId: number;
+    let frameCount = 0;
     const draw = () => {
+      if (frameCount++ % 3 !== 0) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const imageData = ctx.createImageData(canvas.width, canvas.height);
@@ -81,7 +86,11 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden">
+    <section
+      id="hero"
+      className="relative w-full overflow-hidden"
+      style={{ minHeight: "100svh" }}
+    >
       {/* Animated gradient bg */}
       <div ref={gradientRef} className="absolute inset-0 pointer-events-none" />
 
@@ -125,7 +134,7 @@ export default function Hero() {
         {/* Eyebrow */}
         <p
           data-cursor="text"
-          className="mb-6 font-mono text-[0.9rem] tracking-[0.3em] uppercase text-primary"
+          className="mb-4 md:mb-6 font-mono text-[0.8rem] md:text-[0.9rem] tracking-[0.15em] md:tracking-[0.3em] uppercase text-primary"
           style={{
             opacity: revealed ? 1 : 0,
             transform: revealed ? "translateY(0)" : "translateY(16px)",
@@ -180,7 +189,7 @@ export default function Hero() {
             ref={ctaRef}
             href="#projects"
             data-cursor="link"
-            className="group inline-flex items-center gap-3 self-start md:self-auto"
+            className="group inline-flex items-center gap-3 self-start md:self-auto cursor-none"
           >
             <span className="text-label-md tracking-[0.15em] uppercase text-primary transition-opacity duration-200 group-hover:opacity-70">
               View My Work

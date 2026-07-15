@@ -35,14 +35,14 @@ export default function Experience() {
   return (
     <section
       id="experience"
-      className="w-full"
+      className="w-full scroll-mt-16 md:scroll-mt-24"
       style={{
         background: "linear-gradient(to bottom, #232538, #1c1e2c)",
       }}
     >
       <div className="py-section-padding px-6 md:px-12 max-w-7xl mx-auto">
         {/* Eyebrow + headline — same pattern as other sections */}
-        <div className="flex flex-col items-center gap-6 mb-20 reveal">
+        <div className="flex flex-col items-center gap-6 mb-10 md:mb-20 reveal">
           <p
             className="font-jetbrains text-[1rem] tracking-[0.3em] uppercase"
             style={{ color: "#4f46e5" }}
@@ -62,7 +62,7 @@ export default function Experience() {
         </div>
 
         <div className="relative space-y-12">
-          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-[2px] bg-white/25 -translate-x-1/2" />
+          <div className="absolute left-3 md:left-1/2 top-0 bottom-0 w-[2px] bg-white/25 md:-translate-x-1/2" />
           {experiences.map((exp) => (
             <div
               key={exp.role}
@@ -90,7 +90,7 @@ export default function Experience() {
               </div>
 
               <div
-                className="z-10 w-4 h-4 rounded-full border-4"
+                className="z-10 w-4 h-4 rounded-full border-4 self-start md:self-auto ml-1 md:ml-0"
                 style={{
                   background: "#6366f1",
                   borderColor: "#0d0f18",
@@ -99,10 +99,10 @@ export default function Experience() {
               />
 
               <div
-                className={`w-full md:w-6/12 ${
+                className={`w-full md:w-6/12 pl-8 md:pl-0 ${
                   exp.side === "right"
-                    ? "pr-8 md:pr-12 text-right"
-                    : "pl-8 md:pl-12"
+                    ? "md:pr-12 md:text-right"
+                    : "md:pl-12"
                 } mt-4 md:mt-0`}
               >
                 <div

@@ -310,6 +310,7 @@ export default function Skills() {
                       "0 6px 30px rgba(0,0,0,0.7)",
                       "0 2px 8px rgba(0,0,0,0.5)",
                     ].join(", "),
+                    
                   }}
                 >
                   <div
@@ -328,7 +329,7 @@ export default function Skills() {
                     }}
                   >
                     <div
-                      style={{ display: "flex", gap: GAP, marginLeft: R1_OFF }}
+                      style={{ display: "flex", gap: GAP, marginLeft: R1_OFF}}
                     >
                       {row1.map((t) => (
                         <Key key={t.name} tech={t} />

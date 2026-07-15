@@ -3,6 +3,9 @@ import { useEffect } from 'react'
 
 export function useReveal() {
   useEffect(() => {
+    const margin =
+      window.innerHeight < 700 ? '0px' : '0px 0px -50px 0px'
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -13,7 +16,7 @@ export function useReveal() {
           }
         })
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.1, rootMargin: margin }
     )
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el))
     return () => observer.disconnect()

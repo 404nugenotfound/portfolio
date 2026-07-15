@@ -129,7 +129,7 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="w-full min-h-screen flex flex-col justify-center"
+      className="w-full min-h-screen flex flex-col justify-center scroll-mt-16 md:scroll-mt-24"
       style={{
         background: "linear-gradient(to bottom, #2a2d40, #232538)",
       }}
@@ -341,7 +341,7 @@ export default function Projects() {
                   startAuto();
                 }}
                 aria-label="Previous project"
-                className="flex size-9 items-center justify-center rounded-full transition-colors duration-200"
+                className="flex size-11 md:size-9 items-center justify-center rounded-full transition-colors duration-200"
                 style={{ border: `1px solid ${DIM}`, color: MUTED }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = ACCENT;
@@ -352,7 +352,9 @@ export default function Projects() {
                   e.currentTarget.style.color = MUTED;
                 }}
               >
-                ←
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
               </button>
               <button
                 onClick={() => {
@@ -360,7 +362,7 @@ export default function Projects() {
                   startAuto();
                 }}
                 aria-label="Next project"
-                className="flex size-9 items-center justify-center rounded-full transition-colors duration-200"
+                className="flex size-11 md:size-9 items-center justify-center rounded-full transition-colors duration-200"
                 style={{ border: `1px solid ${DIM}`, color: MUTED }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = ACCENT;
@@ -371,7 +373,9 @@ export default function Projects() {
                   e.currentTarget.style.color = MUTED;
                 }}
               >
-                →
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </button>
             </div>
           </div>
@@ -425,7 +429,7 @@ export default function Projects() {
               />
             </div>
 
-            <div className="p-8">
+            <div className="p-5 md:p-8 overflow-y-auto max-h-[50vh]">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <h3
                   className="font-condensed font-black leading-none"

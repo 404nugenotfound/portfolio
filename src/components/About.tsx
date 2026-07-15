@@ -27,7 +27,7 @@ function Counter({ target }: { target: number }) {
     return () => observer.disconnect();
   }, [target]);
   return (
-    <div ref={ref} className="font-condensed font-black text-5xl leading-none mb-2" style={{ color: "#a5aafa" }}>
+    <div ref={ref} className="font-condensed font-black text-4xl md:text-5xl leading-none mb-2" style={{ color: "#a5aafa" }}>
       0
     </div>
   );
@@ -44,7 +44,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="w-full"
+      className="w-full scroll-mt-16 md:scroll-mt-24"
       style={{
         background: "linear-gradient(to bottom, #0d0f18, #14161f)",
       }}
@@ -99,12 +99,12 @@ export default function About() {
             {stats.map(({ target, label }) => (
               <div
                 key={label}
-                className="flex flex-col justify-center py-10 px-6"
+                className="flex flex-col justify-center py-6 md:py-10 px-6"
                 style={{ background: "#0d0f18" }}
               >
                 <Counter target={target} />
                 <div
-                  className="font-jetbrains text-[0.6rem] tracking-[0.1em] uppercase"
+                  className="font-jetbrains text-[0.7rem] tracking-[0.1em] uppercase"
                   style={{ color: "rgba(234,234,240,0.33)" }}
                 >
                   {label}
